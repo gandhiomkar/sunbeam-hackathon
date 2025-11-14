@@ -1,0 +1,31 @@
+{
+  "user": {
+    "firstname": "sanket",
+    "lastname": "raut",
+    "email": "sanket@gamil.com",
+    "password": "sanket",
+    "mobile": "9876543210",
+    "birth": "2003-1-1"
+  },
+
+  "login":{
+    "email":"sanket@gamil.com",
+    "password":"sanket"
+  },
+
+  "movie": {
+    "title": "Avatar",
+    "release_date": "2000-12-25"
+  },
+
+  "review": {
+    "movie_id": 1,
+    "rating": 4,
+    "review": "amazing CGI"
+  },
+
+  "shared": {
+    "reviewId": 1,
+    "userIds": [1, 2, 3]
+  }
+}
