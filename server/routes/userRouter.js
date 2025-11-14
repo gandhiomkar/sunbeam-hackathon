@@ -7,6 +7,7 @@ const {
   updateUser,
   deleteUser,
   updateUserPassword,
+  getUserProfile,
 } = require("../controllers/userController");
 const { registerUser, loginUser } = require("../controllers/authController");
 const {
@@ -19,6 +20,8 @@ const router = express.Router();
 router.get("/reviews", getUserReviews);
 
 router.get("/shared-reviews", getSharedReviews);
+
+router.get("/me", getUserProfile);
 
 router.get("/", getUsers);
 

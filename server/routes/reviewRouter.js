@@ -129,6 +129,25 @@ const insertMultipleRecords = async (req, res) => {
 };
 router.post("/share", insertMultipleRecords);
 
+router.delete("/:id",async (req,res)=>{
+ const reviewId = req.params.id;
+  const user_id = req.user.uid;
+  const { rating, review } = req.body;
+  console.log(reviewId, user_id, rating, review);
+
+  const query = `delete from reviews where rid=? ;`;
+  try {
+    const data = await pool.query(query, [rating, review, reviewId, user_id]);
+    if (data) {
+      res.send(createResponse(Status.SUCCESS, data[0]));
+    } else {
+      res.send(createResponse(Status.FAILED, err));
+    }
+  } catch (error) {
+    console.log(error);
+  }
+})
+
 module.exports = router;
 
 //TODO review update

@@ -1,6 +1,6 @@
-const { error } = require("console");
 const { pool } = require("../db/connection");
 const { Status, createResponse } = require("../utils/createResponse");
+const bcrypt = require("bcrypt");
 
 const getUsers = async (req, res) => {
   res.setHeader("content-type", "application/json");
@@ -9,7 +9,7 @@ const getUsers = async (req, res) => {
     const users = await pool.query(query, [1]);
     return res.send(createResponse(Status.SUCCESS, users[0]));
   } catch (error) {
-      res.send(createResponse(Status.FAILED, error));
+    res.send(createResponse(Status.FAILED, error));
   }
 };
 
@@ -18,12 +18,26 @@ const getUserById = async (req, res) => {
   const query = `SELECT uid, firstname, lastname, email, mobile, birth FROM users WHERE uid = ?`;
   try {
     const data = await pool.query(query, [userId]);
-    const users = data[0]
-    if (users!='') {
-        const user = users[0]
-        if (user != "") res.send(createResponse(Status.SUCCESS, user));
-    }
-    else res.send(createResponse(Status.SUCCESS, "user not found!"));
+    const users = data[0];
+    if (users != "") {
+      const user = users[0];
+      if (user != "") res.send(createResponse(Status.SUCCESS, user));
+    } else res.send(createResponse(Status.SUCCESS, "user not found!"));
+  } catch (error) {
+    res.send(createResponse(Status.FAILED, error));
+  }
+};
+
+const getUserProfile = async (req, res) => {
+  const userId = req.user.uid;
+  const query = `SELECT uid, firstname, lastname, email, mobile, birth FROM users WHERE uid = ?`;
+  try {
+    const data = await pool.query(query, [userId]);
+    const users = data[0];
+    if (users != "") {
+      const user = users[0];
+      if (user != "") res.send(createResponse(Status.SUCCESS, user));
+    } else res.send(createResponse(Status.SUCCESS, "user not found!"));
   } catch (error) {
     res.send(createResponse(Status.FAILED, error));
   }
@@ -37,11 +51,18 @@ const updateUser = async (req, res) => {
 
   const query = `update users set firstname = ?, lastname = ?, email = ?, mobile = ?, birth = ? where uid = ? `;
   try {
-    const data = await  pool.query(query, [firstname, lastname, email, mobile, birth, userId]);
+    const data = await pool.query(query, [
+      firstname,
+      lastname,
+      email,
+      mobile,
+      birth,
+      userId,
+    ]);
     if (data != "") res.send(createResponse(Status.SUCCESS, data[0]));
     else res.send(createResponse(Status.FAILED, data));
   } catch (error) {
-    console.log(error)
+    console.log(error);
   }
 };
 
@@ -49,16 +70,16 @@ const updateUserPassword = async (req, res) => {
   res.setHeader("content-type", "application/json");
 
   const userId = req.user.uid;
-  const {password} = req.body
+  const { newPassword } = req.body;
 
   const query = `update users set password = ? where uid = ? `;
   try {
-    const hashedPassword = await bcrypt.hash(password,10)
-    const data = await  pool.query(query, [hashedPassword, userId]);
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    const data = await pool.query(query, [hashedPassword, userId]);
     if (data != "") res.send(createResponse(Status.SUCCESS, data[0]));
     else res.send(createResponse(Status.FAILED, data));
   } catch (error) {
-    console.log(error)
+    console.log(error);
   }
 };
 
@@ -70,8 +91,15 @@ const deleteUser = async (req, res) => {
     if (data != "") res.send(createResponse(Status.SUCCESS, data));
     else res.send(createResponse(Status.FAILED, data));
   } catch (error) {
-    console.log(error)
+    console.log(error);
   }
 };
 
-module.exports = { getUsers, getUserById, updateUser, deleteUser, updateUserPassword };
+module.exports = {
+  getUsers,
+  getUserById,
+  updateUser,
+  deleteUser,
+  updateUserPassword,
+  getUserProfile
+};

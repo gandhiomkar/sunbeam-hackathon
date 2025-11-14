@@ -28,9 +28,12 @@ create table reviews(
       users (uid)
 );
 
-create table movies(
-      movie_id int primary key auto_increment,
-      title varchar(40),
-      release_date date
+CREATE TABLE movies (
+    movie_id INT PRIMARY KEY AUTO_INCREMENT,
+    title VARCHAR(100),
+    release_date DATE,
+    description TEXT,
+    poster_url VARCHAR(300)
 );
+
 
