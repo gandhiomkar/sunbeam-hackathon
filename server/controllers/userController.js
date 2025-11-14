@@ -45,6 +45,22 @@ const updateUser = async (req, res) => {
   }
 };
 
+const updateUserPassword = async (req, res) => {
+  res.setHeader("content-type", "application/json");
+
+  const userId = req.user.uid;
+
+  const query = `update users set password = ? where uid = ? `;
+  try {
+    const hashedPassword = await bcrypt.hash(password,10)
+    const data = await  pool.query(query, [hashedPassword, userId]);
+    if (data != "") res.send(createResponse(Status.SUCCESS, data[0]));
+    else res.send(createResponse(Status.FAILED, data));
+  } catch (error) {
+    console.log(error)
+  }
+};
+
 const deleteUser = async (req, res) => {
   const userId = req.user.uid;
   const query = `delete FROM users WHERE uid = ?`;
@@ -57,4 +73,4 @@ const deleteUser = async (req, res) => {
   }
 };
 
-module.exports = { getUsers, getUserById, updateUser, deleteUser };
+module.exports = { getUsers, getUserById, updateUser, deleteUser, updateUserPassword };
