@@ -49,6 +49,7 @@ const updateUserPassword = async (req, res) => {
   res.setHeader("content-type", "application/json");
 
   const userId = req.user.uid;
+  const {password} = req.body
 
   const query = `update users set password = ? where uid = ? `;
   try {

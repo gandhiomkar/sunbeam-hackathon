@@ -104,11 +104,8 @@ router.put("/:id", async (req, res) => {
 
 async function insertRecord(record) {
   const sql = "insert into shares(review_id, user_id) values(?,?)";
-  // Ensure the record is a flat array for this approach
   const values = [record[0], record[1]];
 
-  // Use pool.execute() with a single connection for transactional integrity if needed,
-  // or pool.query() directly for simplicity across different pool connections.
   const [result] = await pool.query(sql, values);
   return result;
 }
@@ -119,17 +116,14 @@ const insertMultipleRecords = async (req, res) => {
     return [reviewId, item];
   });
   try {
-    // Create an array of Promises, one for each insert operation
     const promises = records.map((record) => insertRecord(record));
 
-    // Wait for all promises to resolve
     const results = await Promise.all(promises);
     console.log(`All records inserted. Total operations: ${results.length}`);
     return res.send(createResponse(Status.SUCCESS, results));
   } catch (error) {
     console.error("An error occurred during an insertion:", error);
     return res.send(createResponse(Status.FAILED, results));
-    // Promise.all rejects immediately if any promise rejects
     throw error;
   }
 };
