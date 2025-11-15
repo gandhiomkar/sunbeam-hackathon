@@ -17,6 +17,17 @@ const { getReviewsSharedToMe } = require("../controllers/shareController");
 
 const router = express.Router();
 
+
+/**
+ * @swagger
+ * /users:
+ *   get:
+ *     summary: Get all users
+ *     tags: [Users]
+ *     responses:
+ *       200:
+ *         description: List of users
+ */
 router.get("/", getAllUsers);
 
 router.get("/me", auth, getUserProfile);

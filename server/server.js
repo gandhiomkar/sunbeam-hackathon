@@ -3,6 +3,7 @@ const path = require('path')
 const express = require("express")
 require('dotenv').config()
 const cors = require('cors')
+const { swaggerSpec, swaggerUi } = require('./config/swagger')
 
 const authRouter = require('./routes/authRouter')
 const userRouter = require('./routes/userRouter')
@@ -14,6 +15,7 @@ const requestLogger = require('./middleware/requestLoggerMiddleware')
 app = express();
 app.use(cors())
 app.use(express.json())
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use(requestLogger)
 app.use('/auth',authRouter)
 app.use('/user',userRouter)
