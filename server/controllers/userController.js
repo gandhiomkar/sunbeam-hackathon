@@ -2,7 +2,7 @@ const { pool } = require("../db/connection");
 const { Status, createResponse } = require("../utils/createResponse");
 const bcrypt = require("bcrypt");
 
-const getUsers = async (req, res) => {
+const getAllUsers = async (req, res) => {
   res.setHeader("content-type", "application/json");
   try {
     const query = `SELECT uid, firstname, lastname, email, mobile, birth FROM users;`;
@@ -43,7 +43,7 @@ const getUserProfile = async (req, res) => {
   }
 };
 
-const updateUser = async (req, res) => {
+const updateUserProfile = async (req, res) => {
   res.setHeader("content-type", "application/json");
 
   const userId = req.user.uid;
@@ -96,9 +96,9 @@ const deleteUser = async (req, res) => {
 };
 
 module.exports = {
-  getUsers,
+  getAllUsers,
   getUserById,
-  updateUser,
+  updateUserProfile,
   deleteUser,
   updateUserPassword,
   getUserProfile

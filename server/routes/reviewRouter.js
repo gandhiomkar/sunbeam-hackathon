@@ -1,156 +1,31 @@
 const express = require("express");
-const { createResponse, Status } = require("../utils/createResponse");
-const { join } = require("path");
+const {
+  getAllReviews,
+  getReviewById,
+  getMovieReviews,
+  createReview,
+  updateReview,
+  deleteReview,
+} = require("../controllers/reviewController");
+const { auth } = require("../middleware/auth");
+const { getSharesOfReview, postReviewShare } = require("../controllers/shareController");
 
 const router = express.Router();
 
-router.get("/", async (req, res) => {
-  res.setHeader("content-type", "application/json");
-  const query = `select rid, movies.movie_id, rating, review, user_id, modified, title, release_date, firstname, lastname, email
-    from reviews inner join movies on reviews.movie_id=movies.movie_id
-    join users on users.uid = reviews.user_id`;
-  try {
-    const result = await pool.query(query);
-    if (result != "") res.send(createResponse(Status.SUCCESS, result[0]));
-    else res.send(createResponse(Status.FAILED, result));
-  } catch (error) {
-    console.log(error);
-  }
-});
+router.get("/", getAllReviews);
 
-router.get("/:id", async (req, res) => {
-  const reviewId = req.params.id;
-  const query = `select rid, movies.movie_id, rating, review, user_id, modified, title, release_date, firstname, lastname, email
-    from reviews inner join movies on reviews.movie_id=movies.movie_id
-    join users on users.uid = reviews.user_id
-     where rid = ?`;
-  try {
-    const data = await pool.query(query, [reviewId]);
-    if (data != "") res.send(createResponse(Status.SUCCESS, data[0]));
-    else res.send(createResponse(Status.FAILED, data));
-  } catch (error) {
-    console.log(error);
-  }
-});
+router.post("/", auth, createReview);
 
-router.get("/movie/:id", async (req, res) => {
-  const reviewId = req.params.id;
-  const query = `select rid, movies.movie_id, rating, review, user_id, modified, title, release_date, firstname, lastname, email
-    from reviews inner join movies on reviews.movie_id=movies.movie_id
-    join users on users.uid = reviews.user_id
-     where reviews.movie_id = ?`;
-  try {
-    const data = await pool.query(query, [reviewId]);
-    if (data != "") res.send(createResponse(Status.SUCCESS, data[0]));
-    else res.send(createResponse(Status.FAILED, data));
-  } catch (error) {
-    console.log(error);
-  }
-});
+router.get("/movie/:id", getMovieReviews);
 
-router.post("/", async (req, res) => {
-  const { movie_id, rating, review } = req.body;
-  const user_id = req.user.uid;
+router.get("/:id", getReviewById);
 
-  const query = `insert into reviews(movie_id, rating, user_id, review) values(?,?,?,?);`;
-  try {
-    const data = await pool.query(query, [movie_id, rating, user_id, review]);
-    if (data) {
-      res.send(createResponse(Status.SUCCESS, data));
-    } else {
-      res.send(createResponse(Status.FAILED, err));
-    }
-  } catch (error) {
-    console.log(error);
-  }
-});
+router.put("/:id", auth, updateReview);
 
-router.put("/:id", async (req, res) => {
-  const reviewId = req.params.id;
-  const user_id = req.user.uid;
-  const { rating, review } = req.body;
-  console.log(reviewId, user_id, rating, review);
+router.delete("/:id", auth, deleteReview);
 
-  const query = `update reviews set rating=?, review=?, modified=CURRENT_TIMESTAMP() where rid=? and user_id=?;`;
-  try {
-    const data = await pool.query(query, [rating, review, reviewId, user_id]);
-    if (data) {
-      res.send(createResponse(Status.SUCCESS, data[0]));
-    } else {
-      res.send(createResponse(Status.FAILED, err));
-    }
-  } catch (error) {
-    console.log(error);
-  }
-});
+router.get("/share/:reviewId", auth, getSharesOfReview);
 
-// router.post("/share", async (req, res) => {
-//   const { reviewId, userIds } = req.body;
-
-//   const data = userIds.map((item) => {
-//     return [item, reviewId];
-//   });
-//   console.log(data);
-//   const query = `insert into shares(review_id, user_id) values(?);`;
-//   try {
-//     const [result] = await pool.query(query, [data]);
-//     console.log(`Successfully inserted ${result.affectedRows} rows.`);
-//     return result;
-//   } catch (err) {
-//     console.error("Error during bulk insert:", err);
-//     throw err;
-//   }
-// });
-
-async function insertRecord(record) {
-  const sql = "insert into shares(review_id, user_id) values(?,?)";
-  const values = [record[0], record[1]];
-
-  const [result] = await pool.query(sql, values);
-  return result;
-}
-
-const insertMultipleRecords = async (req, res) => {
-  const { reviewId, userIds } = req.body;
-  const records = userIds.map((item) => {
-    return [reviewId, item];
-  });
-  try {
-    const promises = records.map((record) => insertRecord(record));
-
-    const results = await Promise.all(promises);
-    console.log(`All records inserted. Total operations: ${results.length}`);
-    return res.send(createResponse(Status.SUCCESS, results));
-  } catch (error) {
-    console.error("An error occurred during an insertion:", error);
-    return res.send(createResponse(Status.FAILED, results));
-    throw error;
-  }
-};
-router.post("/share", insertMultipleRecords);
-
-router.delete("/:id",async (req,res)=>{
- const reviewId = req.params.id;
-  const user_id = req.user.uid;
-  const { rating, review } = req.body;
-  console.log(reviewId, user_id, rating, review);
-
-  const query = `delete from reviews where rid=? ;`;
-  try {
-    const data = await pool.query(query, [rating, review, reviewId, user_id]);
-    if (data) {
-      res.send(createResponse(Status.SUCCESS, data[0]));
-    } else {
-      res.send(createResponse(Status.FAILED, err));
-    }
-  } catch (error) {
-    console.log(error);
-  }
-})
+router.post("/share", auth, postReviewShare);
 
 module.exports = router;
-
-//TODO review update
-// user profile update
-// share review controller
-// change password

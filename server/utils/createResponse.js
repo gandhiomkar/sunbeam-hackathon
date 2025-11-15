@@ -1,5 +1,3 @@
-const { NOTFOUND } = require("dns");
-
 const Status = Object.freeze({
     PENDING:"pending",
     SUCCESS:"success",
@@ -9,7 +7,7 @@ const Status = Object.freeze({
 
 createResponse = (status, data)=>{
     const res = {
-        "success": status === Status.success ? true : false,
+        "success": status === Status.SUCCESS ? true : false,
         "status": status,
         "data":data
     }

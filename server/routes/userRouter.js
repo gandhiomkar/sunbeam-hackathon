@@ -1,40 +1,38 @@
 const express = require("express");
-const bcrypt = require("bcrypt");
 
 const {
-  getUsers,
+  getAllUsers,
   getUserById,
-  updateUser,
+  updateUserProfile,
   deleteUser,
   updateUserPassword,
   getUserProfile,
 } = require("../controllers/userController");
-const { registerUser, loginUser } = require("../controllers/authController");
 const {
   getUserReviews,
-  getSharedReviews,
+  getReviewsByUserId,
 } = require("../controllers/reviewController");
+const { auth } = require("../middleware/auth");
+const { getReviewsSharedToMe } = require("../controllers/shareController");
 
 const router = express.Router();
 
-router.get("/reviews", getUserReviews);
+router.get("/", getAllUsers);
 
-router.get("/shared-reviews", getSharedReviews);
+router.get("/me", auth, getUserProfile);
 
-router.get("/me", getUserProfile);
+router.put("/me", auth, updateUserProfile);
 
-router.get("/", getUsers);
+router.post("/me/changepassword", auth, updateUserPassword);
+
+router.get("/me/reviews", auth, getUserReviews);
 
 router.get("/:id", getUserById);
 
-router.put("/", updateUser);
+router.delete("/:id", auth, deleteUser);
 
-router.delete("/:id", deleteUser);
+router.get("/:uid/reviews", getReviewsByUserId);
 
-router.post("/register", registerUser);
-
-router.post("/login", loginUser);
-
-router.post("/changepassword", updateUserPassword);
+router.get("/me/shared-reviews", auth, getReviewsSharedToMe);
 
 module.exports = router;

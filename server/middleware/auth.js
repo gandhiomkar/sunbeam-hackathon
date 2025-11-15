@@ -2,8 +2,7 @@ const { Status, createResponse } = require("../utils/createResponse");
 const jwt = require('jsonwebtoken')
 const config = require('../config.json')
 
-const validateToken = (req, res, next) => {
-    console.log(config.unprotectedPaths+':'+ req.url)
+const auth = (req, res, next) => {
     if(config.unprotectedPaths.includes(req.url)){
         return next()
     }
@@ -20,4 +19,4 @@ const validateToken = (req, res, next) => {
     }
 }
 
-module.exports = {validateToken}
+module.exports = {auth}
