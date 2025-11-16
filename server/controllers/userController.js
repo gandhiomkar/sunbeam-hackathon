@@ -7,7 +7,7 @@ const getAllUsers = async (req, res) => {
   try {
     const query = `SELECT uid, firstname, lastname, email, mobile, birth FROM users;`;
     const users = await pool.query(query, [1]);
-    return res.send(createResponse(Status.SUCCESS, users[0]));
+    return res.status(200).send(createResponse(Status.SUCCESS, users[0]));
   } catch (error) {
     res.send(createResponse(Status.FAILED, error));
   }

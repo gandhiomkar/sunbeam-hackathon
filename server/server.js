@@ -20,7 +20,7 @@ app.use(cors())
 app.use(express.json())
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerFile));
 // app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-// app.use(requestLogger)
+app.use(requestLogger)
 /* #swagger.auto = true */
 app.use('/auth',authRouter)
 app.use('/user',userRouter)
