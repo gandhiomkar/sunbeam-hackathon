@@ -12,20 +12,54 @@ const { getSharesOfReview, postReviewShare } = require("../controllers/shareCont
 
 const router = express.Router();
 
-router.get("/", getAllReviews);
+router.get("/",/*
+#swagger.tags = ['Reviews']
+#swagger.summary = 'Get All reviews'
+*/ getAllReviews);
 
-router.post("/", auth, createReview);
+router.post("/", auth,/*
+#swagger.tags = ['Reviews']
+#swagger.summary = 'Create a reviews'
+*/ createReview);
 
-router.get("/movie/:id", getMovieReviews);
+router.get("/movie/:id",
+  /*
+#swagger.tags = ['Reviews']
+#swagger.summary = 'Get Movie reviews'
+*/ getMovieReviews);
 
-router.get("/:id", getReviewById);
+router.get("/:id",/*
+#swagger.tags = ['Reviews']
+#swagger.summary = 'Get A review'
+*/ getReviewById);
 
-router.put("/:id", auth, updateReview);
+router.put("/:id", auth,/*
+#swagger.tags = ['Reviews']
+#swagger.summary = 'Update A reviews'
+*/ updateReview);
 
-router.delete("/:id", auth, deleteReview);
+router.delete("/:id", auth,/*
+#swagger.tags = ['Reviews']
+#swagger.summary = 'Delete A reviews'
+*/ deleteReview);
 
-router.get("/share/:reviewId", auth, getSharesOfReview);
+router.get("/share/:reviewId", auth,/*
+#swagger.tags = ['Reviews']
+#swagger.summary = 'Get All shares of a review'
+*/ getSharesOfReview);
 
-router.post("/share", auth, postReviewShare);
+router.post("/share", auth,/*
+#swagger.tags = ['Reviews']
+#swagger.summary = 'Post A review share with other users'
+#swagger.parameters['body'] = {
+      in: 'body',
+      description: 'Review share request payload',
+      required: true,
+      schema: {
+        reviewId: '1',
+        userIds: [1, 2, 3]
+      }
+    }
+*/ postReviewShare);
 
 module.exports = router;
